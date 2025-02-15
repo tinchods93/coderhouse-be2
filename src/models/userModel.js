@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import UserRoles from '../common/userRoles.js';
 
 const userCollection = 'users';
 
@@ -30,7 +31,7 @@ const userSchema = mongoose.Schema({
   },
   role: {
     type: String,
-    default: 'user',
+    default: UserRoles.USER,
     required: false,
   },
 });

@@ -1,30 +1,30 @@
 class DbService {
   static async createItem(item, model) {
-    const newItem = new model(item);
-    await newItem.save();
+    const result = new model(item);
+    await result.save();
 
-    return newItem;
+    return result;
   }
 
   static async updateItem(id, item, model) {
-    const updatedItem = await model.findByIdAndUpdate(id, item, { new: true });
-    return updatedItem;
+    const result = await model.findByIdAndUpdate(id, item, { new: true });
+    return result;
   }
 
   static async deleteItem(id, model) {
-    const deletedItem = await model.findByIdAndDelete(id);
-    return deletedItem;
+    const result = await model.findByIdAndDelete(id);
+    return result;
   }
 
   static async getItem(id, model) {
-    const item = await model.findById(id).exec();
+    const result = await model.findById(id).exec();
 
-    return item;
+    return result;
   }
 
   static async getItems(model, query) {
-    const items = await model.find(query);
-    return items;
+    const result = await model.find(query);
+    return result;
   }
 }
 

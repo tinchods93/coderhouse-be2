@@ -2,44 +2,47 @@ import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import UserDomain from '../domain/userDomain.js';
 import { StatusMessages } from '../common/statusMessages.js';
+import ErrorEntity from '../common/ErrorEntity.js';
+import passportAuth from '../middlewares/passportAuth.js';
 
-const router = Router();
+const userRouter = Router();
 
-const Domain = new UserDomain();
-
-// Consultar todos los usuarios
-router.get('/', async (req, res) => {
+userRouter.get('/profile', passportAuth, async (req, res) => {
   try {
-    const result = await Domain.getUsers(req.query);
+    const result = await UserDomain.getUserById(req.user.id);
 
     if (result.message) {
-      return res.status(result.status).send({
-        status: StatusMessages.ERROR,
-        message: result.message,
-      });
+      const { statusCode, ...errorPayload } = ErrorEntity.getByCode(
+        result.status,
+        result
+      );
+      return res.status(result.status).send(errorPayload);
     }
 
-    res.status(result.status).send({
+    res.status(StatusCodes.OK).send({
       status: StatusMessages.SUCCESS,
       payload: result.payload,
     });
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-      status: StatusMessages.FAULT,
-      message: error.message,
-    });
+    const { statusCode, ...errorPayload } =
+      ErrorEntity.InternalServerError(error);
+    return res.status(statusCode).send(errorPayload);
   }
 });
 
-// Crear un usuario
-router.post('/', async (req, res) => {
+// Registra un usuario
+userRouter.post('/signup', async (req, res) => {
   try {
-    const result = await Domain.createUser(req.body);
+    // borramos el campo role para que no se pueda registrar como admin
+    delete req.body.role;
+    const result = await UserDomain.createUser(req.body);
     if (result.message) {
-      return res.status(result.status).send({
-        status: StatusMessages.ERROR,
-        message: result.message,
-      });
+      const { statusCode, ...errorPayload } = ErrorEntity.getByCode(
+        result.status,
+        result
+      );
+
+      return res.status(result.status).send(errorPayload);
     }
 
     res.status(result.status).send({
@@ -47,24 +50,52 @@ router.post('/', async (req, res) => {
       payload: result.payload,
     });
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-      status: StatusMessages.FAULT,
-      message: error.message,
+    // console.error(error);
+    const { statusCode, ...errorPayload } =
+      ErrorEntity.InternalServerError(error);
+    return res.status(statusCode).send(errorPayload);
+  }
+});
+
+// Login de usuario
+userRouter.post('/signin', async (req, res) => {
+  try {
+    const result = await UserDomain.login(req.body);
+
+    if (result.message) {
+      const { statusCode, ...errorPayload } = ErrorEntity.getByCode(
+        result.status,
+        result
+      );
+      return res.status(result.status).send(errorPayload);
+    }
+
+    res.status(result.status).send({
+      status: StatusMessages.SUCCESS,
+      payload: result.payload,
+      access_token: result.access_token,
     });
+  } catch (error) {
+    console.error(error);
+    const { statusCode, ...errorPayload } =
+      ErrorEntity.InternalServerError(error);
+    return res.status(statusCode).send(errorPayload);
   }
 });
 
 // Actualizar un usuario
-router.put('/:uid', async (req, res) => {
+userRouter.put('/:uid', passportAuth, async (req, res) => {
   try {
+    delete req.body.role;
     const uid = req.params.uid;
-    const result = await Domain.updateUser(uid, req.body);
+    const result = await UserDomain.updateUser(uid, req.body);
 
     if (result.message) {
-      return res.status(result.status).send({
-        status: StatusMessages.ERROR,
-        message: result.message,
-      });
+      const { statusCode, ...errorPayload } = ErrorEntity.getByCode(
+        result.status,
+        result
+      );
+      return res.status(result.status).send(errorPayload);
     }
 
     res.status(result.status).send({
@@ -79,29 +110,4 @@ router.put('/:uid', async (req, res) => {
   }
 });
 
-// Eliminar un usuario
-router.delete('/:uid', async (req, res) => {
-  try {
-    const uid = req.params.uid;
-    const result = await Domain.deleteUser(uid);
-
-    if (result.message) {
-      return res.status(result.status).send({
-        status: StatusMessages.ERROR,
-        message: result.message,
-      });
-    }
-
-    res.status(result.status).send({
-      status: StatusMessages.SUCCESS,
-      payload: result,
-    });
-  } catch (error) {
-    res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).send({
-      status: StatusMessages.FAULT,
-      message: error.message,
-    });
-  }
-});
-
-export default router;
+export default userRouter;
