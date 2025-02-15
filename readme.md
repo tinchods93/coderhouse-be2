@@ -1,10 +1,23 @@
-# Express + Mongoose
-## Consigna
-    - Realizar un proyecto en Node.js que se conecte a una base de datos MongoDB llamada “class-zero” a través de mongoose.
-    - Crear un model de users llamador “userModel.js” que utilice una colección llamada “users” y tenga la siguiente estructura de datos:
-        - name: string, required.
-        - age: number, required.
-        - email: string, required, unique.
-    - Crear un router llamado “userRouter.js” que tenga su ruta principal en “/api/users”.
-    - Desarrollar en el router los endpoints correspondientes al CRUD pensado para trabajar con el model de forma asíncrona.
-    - Corroborar los resultados con Postman.
+# Coderhouse Backend 2
+
+### Programado por *MARTIN DOS SANTOS*
+### Descripcion:
+
+Este proyecto fue realizado para cumplir con los requisitos de las entregas del curso Coderhouse Backend 2 Flex.
+
+### Temas
+
+- Autorización y autenticación de usuarios
+  - Passport
+  - JWT
+  - Cookies
+
+### NPM Scripts
+
+- `npm i`: para instalar las dependencias
+- `npm start`: Inicializa el servidor en local.
+  - Requisitos:
+    - Servicio de mongoDb local en `mongodb://127.0.0.1:27017/`
+    - Cuenta de admin que se autogenera si no existe (tambien se logea en la terminal al iniciar el servidor -esto no deberia logearse si estuvieramos en produccion- ):
+      - email: coderbe2.admin.mds@gmail.com
+      - password: Admin123$
