@@ -1,0 +1,22 @@
+{
+  "name": "class-zero-hands-on-labs",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Project template with Express and Handlebars",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "clear & nodemon src/app.js"
+  },
+  "keywords": [],
+  "author": "Joaquin Cejas",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "http-status-codes": "^2.3.0",
+    "mongoose": "^7.5.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
