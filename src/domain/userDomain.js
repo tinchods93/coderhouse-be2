@@ -1,9 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 import userModel from '../models/userModel.js';
 import DbService from '../services/dbService.js';
+import bcrypt from 'bcrypt';
 
 // Consultar todos los usuarios
-
 class UserDomain {
   async getUsers(inputData) {
     // inputData puede contener filtros para la consulta
@@ -34,7 +34,14 @@ class UserDomain {
        */
   async createUser(inputData) {
     try {
-      const result = await DbService.createItem(inputData, userModel);
+      userModel.validate(inputData);
+
+      const user = {
+        ...inputData,
+        password: bcrypt.hashSync(inputData.password, 10),
+      };
+
+      const result = await DbService.createItem(user, userModel);
       return {
         status: StatusCodes.CREATED,
         payload: result,
